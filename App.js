@@ -13,6 +13,20 @@ export default function App() {
   const [loading, setloading] = useState(true);
   const BUSSTOP_URL = "https://arrivelah2.busrouter.sg/?id=59261";
 
+  function loadBusStopData() {
+    fetch(BUSSTOP_URL)
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
+        console.log(responseData);
+      });
+  }
+
+  useEffect(() => {
+    loadBusStopData();
+  }, []);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bus Arrival Time :</Text>
