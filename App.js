@@ -10,28 +10,39 @@ import { useState, useEffect } from "react";
 import { color } from "react-native/Libraries/Components/View/ReactNativeStyleAttributes";
 
 export default function App() {
-  const [loading, setloading] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [arrival, setArrival] = useState("");
   const BUSSTOP_URL = "https://arrivelah2.busrouter.sg/?id=59261";
 
   function loadBusStopData() {
+    setLoading(true);
     fetch(BUSSTOP_URL)
       .then((response) => {
         return response.json();
       })
       .then((responseData) => {
+        console.log("Original Data :");
         console.log(responseData);
+        const myBus = responseData.services.filter(
+          (item) => item.no === "800"
+        )[0];
+        console.log("My Bus :");
+        console.log(myBus.next.time);
+        setArrival(myBus.next.time);
+        setLoading(false);
       });
   }
 
   useEffect(() => {
-    loadBusStopData();
+    const interval = setInterval(loadBusStopData, 1000);
+    return () => clearInterval(interval);
   }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Bus Arrival Time :</Text>
       <Text style={styles.arrivalTime}>
-        {loading ? <ActivityIndicator size="large" color="red" /> : "Loaded"}
+        {loading ? <ActivityIndicator size="large" color="red" /> : arrival}
       </Text>
       <TouchableOpacity style={styles.button}>
         <Text style={styles.buttonText}>Refresh !</Text>
@@ -49,7 +60,7 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    backgroundColor: "lightgreen",
+    backgroundColor: "green",
     margin: 60,
     padding: 30,
     borderRadius: 10,
@@ -60,12 +71,12 @@ const styles = StyleSheet.create({
   },
   title: {
     color: "black",
-    fontSize: 35,
+    fontSize: 30,
     fontWeight: "bold",
   },
   arrivalTime: {
     color: "black",
-    fontSize: 30,
+    fontSize: 25,
     fontWeight: "bold",
     padding: 10,
     paddingTop: 30,
